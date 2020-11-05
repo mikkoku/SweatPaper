@@ -13,12 +13,12 @@ function log_prior(x)
     if R < 40 return -Inf end
     lp = 0
     lp += logpdf(Gamma(3, 10/3), σ)
-    lp += logpdf(Uniform(0.1, 1), p)
+    lp += logpdf(Distributions.Uniform(0.1, 1), p)
     lp
 end
 
 # Helper function for inverses of point pattern summaries
-# Find the location r that satisfies v[r] == y
+# Find the location r that satisfies v(r) == y by linear interpolation
 function summinv(r, v, y)
     i = findfirst(>=(y), v)
     if i == nothing
@@ -36,6 +36,7 @@ function summ(pp)
     vF = Fest(pp, rF)
     rpcf = range(0, 200, length=500)
     vpcf = pcf(pp, rpcf)
+    # Set the first 10 pixels to zero in order to discard them
     vpcf[1:26] .= 0.0
 
     [summinv(rpcf, vpcf, 0.75), summinv(rpcf, vpcf, 1.0), summinv(rF, vF, 0.5)]
@@ -64,7 +65,7 @@ function sim_dist(theta, pp, s_obs)
     if length(x) < 10
         return Inf
     end
-    # Compute summary for simualted pattern
+    # Compute summaries for simulated pattern
     s_sim = summ(x)
     # Compute distance between observed and simulated summary
     norm(s_sim - s_obs)
@@ -74,9 +75,8 @@ pp = readpattern(20)
 
 s_obs = summ(pp)
 
-N = 100_00
+N = 10_000
 # N = 1_000_000
-# N = 2000
 init = ComponentArray(R=70.0, p=0.9, σ=10.0)
 begin
     # Progress prints a progress bar
@@ -96,8 +96,8 @@ chain = Chains(X', labels(init))
 # Plot chain with an initial tolerance
 plot(chain)
 
-# Take the N/10 observations with lowest tolerance
-inds = sort(partialsortperm(res.Dist, 1:div(N,10)))
+# Take the N/10 or 250 000 (whichever is lower) observations with lowest tolerance
+inds = sort(partialsortperm(res.Dist, 1:min(div(N,10), 250_000)))
 plot(chain[inds,:,:])
 
 # Simulate point patterns from the posterior predictive distribution
@@ -105,6 +105,9 @@ pps = map(inds) do ind
     x = convert(typeof(init), X[:,ind])
     sim(x, pp.window)
 end
+
+# Plot observed and simulated point patterns
+plot(plot(pp, labels="", title="Data"), plot(pps[1], labels="", title="Simulation"))
 
 # Compute pair correlation functions for all samples and observed pattern
 r = 0:500

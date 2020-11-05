@@ -26,6 +26,8 @@ p2 = Optim.maximizer(o2)
 # Generate samples from the Softcore model using the estimated parameters
 pps = [rand(M1(p2.R, p2.kappa), pp.window, length(pp.data)) for _ in 1:2500]
 
+plot(plot(pp, labels="", title="Data"), plot(pps[1], labels="", title="Simulation"))
+
 # Compute pair correlation functions for all samples and observed pattern
 r = 0:500
 gsim = [pcf(pp, r)[2:end] for pp in pps]
@@ -34,7 +36,7 @@ r = 1:500
 plot(r, gobs, label="obs")
 plot!(r, mean(gsim), label="mean")
 
-# Compute global envelope simulated pair correlation functions
+# Compute global envelope from simulated pair correlation functions
 (hi, lo, alpha_interval) = globalenvelope(gsim)
 plot!(r, lo, label="lo")
 plot!(r, hi, label="hi")

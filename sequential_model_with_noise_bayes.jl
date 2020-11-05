@@ -29,8 +29,8 @@ function log_posterior(x)
 end
 
 # Apply robust adaptive metropolis sampling
-# For a more serious analysis N and Nburnin could be multiplied by 10
-N = 10000
+# For a more serious analysis N should be 100_000
+N = 10_000
 Nburnin = div(N, 5)
 init = ComponentArray(R=70.0, kappa=0.4, theta=0.1)
 
@@ -55,8 +55,8 @@ pps = map(inds) do i
     @unpack R, kappa = convert(typeof(init), X[:,i])
     rand(M1(R, kappa), pp.window, length(pp.data))
 end
-plot(pp)
-plot!(pps[1])
+
+plot(plot(pp, labels="", title="Data"), plot(pps[1], labels="", title="Simulation"))
 
 # Compute pair correlation functions for all samples and observed pattern
 r = 0:500
@@ -66,7 +66,7 @@ r = 1:500
 plot(r, gobs, label="obs")
 plot!(r, mean(gsim), label="mean")
 
-# Compute global envelope simulated pair correlation functions
+# Compute global envelope from simulated pair correlation functions
 (hi, lo, alpha_interval) = globalenvelope(gsim)
 plot!(r, lo, label="lo")
 plot!(r, hi, label="hi")

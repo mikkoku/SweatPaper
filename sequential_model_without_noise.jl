@@ -7,7 +7,7 @@ using UnPack
 using Plots
 include("readpattern.jl")
 
-# Read point pattern and observation window for one subject
+# Read point pattern and observation window for subject 20
 pp = readpattern(20)
 
 # Define model and loglikelihood
@@ -25,8 +25,7 @@ p1 = Optim.maximizer(o1)
 
 # Generate samples from fitted model
 pps = [rand(M1(p1.R, p1.kappa), pp.window, length(pp.data)) for _ in 1:1000]
-plot(pp)
-plot!(pps[1])
+plot(plot(pp, labels="", title="Data"), plot(pps[1], labels="", title="Simulation"))
 
 # Compute pair correlation functions for all samples and observed pattern
 r = 0:500
@@ -36,7 +35,7 @@ r = 1:500
 plot(r, gobs, label="obs")
 plot!(r, mean(gsim), label="mean")
 
-# Compute global envelope simulated pair correlation functions
+# Compute global envelope from the simulated pair correlation functions
 (hi, lo, alpha_interval) = globalenvelope(gsim)
 plot!(r, lo, label="lo")
 plot!(r, hi, label="hi")

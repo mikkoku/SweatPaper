@@ -2,6 +2,7 @@ using PointPatternStatistics
 using Plots
 include("readpattern.jl")
 
+# Read pattern of subject 20
 pp = readpattern(20)
 plot(pp)
 g = pcf(pp, 0:500)

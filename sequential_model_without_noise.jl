@@ -16,7 +16,7 @@ function log_likelihood(x)
     @unpack R, kappa = x
     R <= 0.0 && return -Inf
     0.0 <= kappa <= 1.0 || return -Inf
-    logpdf(M1(R, kappa), pp, (nx=120,))
+    logpdf(M1(R, kappa), pp, 120)
 end
 
 # Maximize loglikelihood

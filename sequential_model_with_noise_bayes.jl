@@ -25,7 +25,7 @@ function log_posterior(x)
     isinf(lp) && return lp
     # Use 120 integration point on x axis.
     # Use multithreading to speed up computation.
-    lp + logpdf(M2(R, kappa, theta), pp, (nx=120, threads=true))
+    lp + logpdf(M2(R, kappa, theta), pp, SequentialPointProcesses.Options(nx=120, parallel=:threads))
 end
 
 # Apply robust adaptive metropolis sampling

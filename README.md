@@ -45,3 +45,7 @@ package manager:
 ```julia
 Pkg.add("RCall")
 ```
+
+## References
+
+* "Point process models for sweat gland activation observed with noise" Kuronen, Myllymäki, Loavenbruck, Särkkä, https://arxiv.org/abs/2005.01517
